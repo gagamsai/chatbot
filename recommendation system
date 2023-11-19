@@ -1,0 +1,33 @@
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Sample user-item matrix (rows represent users, columns represent items)
+user_item_matrix = np.array([
+    [5, 4, 0, 0, 1],
+    [0, 5, 4, 0, 2],
+    [1, 0, 0, 5, 4],
+    [4, 0, 2, 4, 0],
+])
+
+# Function to calculate cosine similarity between users
+def calculate_similarity(matrix):
+    similarity = cosine_similarity(matrix)
+    np.fill_diagonal(similarity, 0)  # Set diagonal elements to 0 to avoid self-similarity
+    return similarity
+
+# Function to make recommendations for a user
+def make_recommendations(user_id, user_item_matrix, similarity_matrix, n=2):
+    user_ratings = user_item_matrix[user_id]
+    weighted_sum = np.dot(similarity_matrix[user_id], user_item_matrix)
+    recommended_items = np.argsort(weighted_sum)[::-1][:n]
+    return recommended_items
+
+if __name__ == "__main__":
+    # Calculate user similarity
+    user_similarity = calculate_similarity(user_item_matrix)
+
+    # Make recommendations for a user (e.g., user 0)
+    user_id_to_recommend = 0
+    recommendations = make_recommendations(user_id_to_recommend, user_item_matrix, user_similarity)
+
+    print(f"Top recommendations for User {user_id_to_recommend}: {recommendations}")
